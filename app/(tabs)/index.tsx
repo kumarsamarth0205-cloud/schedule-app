@@ -1,98 +1,218 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, SafeAreaView, ScrollView, Alert
+} from 'react-native';
+import AdminDashboard from './college/admin/dashboard';
+import FacultyDashboard from './college/faculty/dashboard';
+import HodDashboard from './college/hod/dashboard';
+import StudentDashboard from './college/student/dashboard';
+import SchoolAdminDashboard from './school/admin/dashboard';
+import PrincipalDashboard from './school/principal/dashboard';
+import TeacherDashboard from './school/teacher/dashboard';
+import SchoolStudentDashboard from './school/student/dashboard';
+import ParentDashboard from './school/parent/dashboard';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const roles = [
+  { id: 'admin', label: 'Admin', icon: '👑' },
+  { id: 'hod', label: 'HOD', icon: '👨‍🏫' },
+  { id: 'faculty', label: 'Faculty', icon: '👩‍🏫' },
+  { id: 'student', label: 'Student', icon: '🎓' },
+  { id: 'principal', label: 'Principal', icon: '🏫' },
+  { id: 'teacher', label: 'Teacher', icon: '📚' },
+  { id: 'parent', label: 'Parent', icon: '👨‍👩‍👧' },
+];
 
-export default function HomeScreen() {
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password!');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch('https://YOUR_NGROK_URL/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role, section: 'college' })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setLoggedIn(true);
+      } else {
+        Alert.alert('Error', data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Cannot connect to server!');
+    }
+    setLoading(false);
+  };
+
+  if (loggedIn && role === 'admin') return <AdminDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'hod') return <HodDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'faculty') return <FacultyDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'student') return <StudentDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'principal') return <PrincipalDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'teacher') return <TeacherDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+  if (loggedIn && role === 'parent') return <ParentDashboard onLogout={() => { setLoggedIn(false); setEmail(''); setPassword(''); }} />;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.top}>
+        <Text style={styles.appName}>Schedule</Text>
+        <Text style={styles.tagline}>SMART ACADEMIC PLANNER</Text>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <Text style={styles.label}>Select Role</Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.roleScroll}
+      >
+        {roles.map((r) => (
+          <TouchableOpacity
+            key={r.id}
+            style={[styles.roleBtn, role === r.id && styles.roleBtnActive]}
+            onPress={() => setRole(r.id)}
+          >
+            <Text style={styles.roleIcon}>{r.icon}</Text>
+            <Text style={[styles.roleText, role === r.id && styles.roleTextActive]}>
+              {r.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your email"
+        placeholderTextColor="#999"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Password</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your password"
+        placeholderTextColor="#999"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableOpacity
+        style={[styles.loginBtn, loading && styles.loginBtnDisabled]}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        <Text style={styles.loginText}>
+          {loading ? 'Logging in...' : `Login as ${role.toUpperCase()}`}
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.forgot}>Forgot Password? Contact Admin</Text>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#f0eeff',
+    paddingHorizontal: 24,
+    paddingTop: 20,
   },
-  stepContainer: {
-    gap: 8,
+  top: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 30,
+  },
+  appName: {
+    fontSize: 48,
+    fontWeight: '800',
+    color: '#26215C',
+    marginBottom: 6,
+  },
+  tagline: {
+    fontSize: 11,
+    color: '#7F77DD',
+    letterSpacing: 3,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#534AB7',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  roleScroll: {
+    flexGrow: 0,
+    marginBottom: 20,
+  },
+  roleBtn: {
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 12,
+    marginRight: 10,
+    borderWidth: 2,
+    borderColor: '#DDD8FF',
+    minWidth: 72,
+  },
+  roleBtnActive: {
+    backgroundColor: '#534AB7',
+    borderColor: '#534AB7',
+  },
+  roleIcon: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  roleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#26215C',
+  },
+  roleTextActive: {
+    color: '#ffffff',
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#DDD8FF',
+    color: '#26215C',
+  },
+  loginBtn: {
+    backgroundColor: '#534AB7',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  loginBtnDisabled: {
+    backgroundColor: '#AFA9EC',
+  },
+  loginText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  forgot: {
+    color: '#7F77DD',
+    marginTop: 16,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
