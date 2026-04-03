@@ -1,55 +1,43 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Alert
+  SafeAreaView, ScrollView
 } from 'react-native';
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const timetableGenerated = true;
 
-const noTimetable = { generated: false };
-
-const myClasses = {
+const deptTimetable = {
   Mon: [
-    { time: '9:00 AM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' },
-    { time: '11:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4B' },
+    { time: '9:00 AM', subject: 'Data Science', room: 'A101', teacher: 'Dr. Sharma', batch: 'BT-DS-6A' },
+    { time: '10:00 AM', subject: 'Machine Learning', room: 'B202', teacher: 'Dr. Verma', batch: 'BT-DS-6B' },
+    { time: '2:00 PM', subject: 'Python Lab', room: 'Lab 1', teacher: 'Ms. Gupta', batch: 'BT-DS-4A' },
   ],
-  Tue: [{ time: '10:00 AM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' }],
+  Tue: [
+    { time: '9:00 AM', subject: 'Statistics', room: 'A101', teacher: 'Dr. Sharma', batch: 'BT-DS-6A' },
+  ],
   Wed: [
-    { time: '9:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4B' },
-    { time: '2:00 PM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6B' },
+    { time: '10:00 AM', subject: 'Data Science', room: 'A101', teacher: 'Dr. Sharma', batch: 'BT-DS-6A' },
+    { time: '2:00 PM', subject: 'ML Lab', room: 'Lab 2', teacher: 'Dr. Verma', batch: 'BT-DS-6B' },
   ],
-  Thu: [{ time: '11:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4A' }],
-  Fri: [{ time: '1:00 PM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' }],
+  Thu: [
+    { time: '9:00 AM', subject: 'Database', room: 'A103', teacher: 'Mr. Singh', batch: 'BT-DS-4A' },
+  ],
+  Fri: [
+    { time: '9:00 AM', subject: 'Python Lab', room: 'Lab 1', teacher: 'Ms. Gupta', batch: 'BT-DS-6A' },
+  ],
   Sat: [],
 };
 
-const myExamDuty = [
-  { date: '10 May', hall: 'Hall A', time: '10:00 AM - 1:00 PM', exam: 'Data Science' },
-  { date: '14 May', hall: 'Hall B', time: '2:00 PM - 5:00 PM', exam: 'AI Fundamentals' },
-];
-
-const timetableGenerated = true;
-
-export default function FacultyScreen({ user, onLogout }) {
-  const [tab, setTab] = useState('timetable');
+export default function HodScreen({ user, onLogout }) {
   const [selectedDay, setSelectedDay] = useState('Mon');
-
-  const handleSickLeave = () => {
-    Alert.alert(
-      'Mark Sick Leave',
-      'AI will automatically reshuffle your classes and notify students.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Confirm', style: 'destructive', onPress: () => Alert.alert('Done!', 'Sick leave marked! Students notified.') }
-      ]
-    );
-  };
+  const [tab, setTab] = useState('timetable');
 
   if (!timetableGenerated) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <Text style={styles.header}>Faculty</Text>
+          <Text style={styles.header}>HOD Dashboard</Text>
           <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
@@ -57,7 +45,7 @@ export default function FacultyScreen({ user, onLogout }) {
         <View style={styles.waitBox}>
           <Text style={styles.waitIcon}>⏳</Text>
           <Text style={styles.waitTitle}>Timetable Not Generated Yet</Text>
-          <Text style={styles.waitDesc}>Please wait for Admin to upload data and generate the timetable. You will be able to see your schedule here once it is ready.</Text>
+          <Text style={styles.waitDesc}>Admin needs to upload data and generate the timetable first.</Text>
         </View>
       </SafeAreaView>
     );
@@ -67,7 +55,7 @@ export default function FacultyScreen({ user, onLogout }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
         <View>
-          <Text style={styles.header}>Faculty Dashboard</Text>
+          <Text style={styles.header}>HOD Dashboard</Text>
           <Text style={styles.sub}>Welcome, {user?.name}</Text>
         </View>
         <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
@@ -75,16 +63,12 @@ export default function FacultyScreen({ user, onLogout }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.sickLeaveBtn} onPress={handleSickLeave}>
-        <Text style={styles.sickLeaveText}>🤒 Mark Today as Sick Leave</Text>
-      </TouchableOpacity>
-
       <View style={styles.tabRow}>
         <TouchableOpacity style={[styles.tab, tab === 'timetable' && styles.tabActive]} onPress={() => setTab('timetable')}>
-          <Text style={[styles.tabText, tab === 'timetable' && styles.tabTextActive]}>📅 My Classes</Text>
+          <Text style={[styles.tabText, tab === 'timetable' && styles.tabTextActive]}>📅 Dept Timetable</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.tab, tab === 'exam' && styles.tabActive]} onPress={() => setTab('exam')}>
-          <Text style={[styles.tabText, tab === 'exam' && styles.tabTextActive]}>📝 Exam Duty</Text>
+        <TouchableOpacity style={[styles.tab, tab === 'club' && styles.tabActive]} onPress={() => setTab('club')}>
+          <Text style={[styles.tabText, tab === 'club' && styles.tabTextActive]}>🎯 Club Sync</Text>
         </TouchableOpacity>
       </View>
 
@@ -98,12 +82,12 @@ export default function FacultyScreen({ user, onLogout }) {
             ))}
           </ScrollView>
           <ScrollView showsVerticalScrollIndicator={false}>
-            {myClasses[selectedDay].length === 0 ? (
+            {deptTimetable[selectedDay].length === 0 ? (
               <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>No classes today 🎉</Text>
+                <Text style={styles.emptyText}>No classes scheduled</Text>
               </View>
             ) : (
-              myClasses[selectedDay].map((item, i) => (
+              deptTimetable[selectedDay].map((item, i) => (
                 <View key={i} style={styles.classCard}>
                   <View style={styles.timeBox}>
                     <Text style={styles.timeText}>{item.time}</Text>
@@ -111,6 +95,7 @@ export default function FacultyScreen({ user, onLogout }) {
                   <View style={styles.classInfo}>
                     <Text style={styles.subjectText}>{item.subject}</Text>
                     <Text style={styles.detailText}>🏫 {item.room}</Text>
+                    <Text style={styles.detailText}>👨‍🏫 {item.teacher}</Text>
                     <Text style={styles.detailText}>👥 {item.batch}</Text>
                   </View>
                 </View>
@@ -120,21 +105,14 @@ export default function FacultyScreen({ user, onLogout }) {
         </>
       )}
 
-      {tab === 'exam' && (
+      {tab === 'club' && (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {myExamDuty.map((item, i) => (
-            <View key={i} style={styles.examCard}>
-              <View style={styles.dateBox}>
-                <Text style={styles.dateNum}>{item.date.split(' ')[0]}</Text>
-                <Text style={styles.dateMon}>{item.date.split(' ')[1]}</Text>
-              </View>
-              <View style={styles.classInfo}>
-                <Text style={styles.subjectText}>Invigilator — {item.hall}</Text>
-                <Text style={styles.detailText}>🕐 {item.time}</Text>
-                <Text style={styles.detailText}>📝 {item.exam}</Text>
-              </View>
-            </View>
-          ))}
+          <View style={styles.clubCard}>
+            <Text style={styles.clubTitle}>🎯 Best Club Meeting Times</Text>
+            <Text style={styles.clubItem}>• Wednesday 3:00 PM — All BT-DS students free</Text>
+            <Text style={styles.clubItem}>• Friday 2:00 PM — All BT-AI students free</Text>
+            <Text style={styles.clubItem}>• Saturday 12:00 PM — Combined free slot</Text>
+          </View>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -143,7 +121,7 @@ export default function FacultyScreen({ user, onLogout }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f0eeff', paddingHorizontal: 16, paddingTop: 20 },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   header: { fontSize: 24, fontWeight: '800', color: '#26215C' },
   sub: { fontSize: 12, color: '#7F77DD', marginTop: 2 },
   logoutBtn: { backgroundColor: '#ffffff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: '#534AB7' },
@@ -152,8 +130,6 @@ const styles = StyleSheet.create({
   waitIcon: { fontSize: 60, marginBottom: 20 },
   waitTitle: { fontSize: 20, fontWeight: '800', color: '#26215C', marginBottom: 12, textAlign: 'center' },
   waitDesc: { fontSize: 14, color: '#7F77DD', textAlign: 'center', lineHeight: 22 },
-  sickLeaveBtn: { backgroundColor: '#FCEBEB', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 14, borderWidth: 1.5, borderColor: '#E24B4A' },
-  sickLeaveText: { color: '#E24B4A', fontWeight: '700', fontSize: 14 },
   tabRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },
   tab: { flex: 1, backgroundColor: '#ffffff', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1.5, borderColor: '#DDD8FF' },
   tabActive: { backgroundColor: '#534AB7', borderColor: '#534AB7' },
@@ -165,15 +141,14 @@ const styles = StyleSheet.create({
   dayText: { color: '#534AB7', fontWeight: '600' },
   dayTextActive: { color: '#ffffff' },
   classCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#534AB7' },
-  examCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#E24B4A' },
   timeBox: { backgroundColor: '#f0eeff', borderRadius: 10, padding: 10, marginRight: 14, alignItems: 'center', minWidth: 75 },
   timeText: { color: '#534AB7', fontWeight: '700', fontSize: 12 },
-  dateBox: { backgroundColor: '#FCEBEB', borderRadius: 10, padding: 10, marginRight: 14, alignItems: 'center', minWidth: 55 },
-  dateNum: { color: '#E24B4A', fontWeight: '800', fontSize: 20 },
-  dateMon: { color: '#E24B4A', fontWeight: '600', fontSize: 11 },
   classInfo: { flex: 1 },
   subjectText: { fontSize: 16, fontWeight: '700', color: '#26215C', marginBottom: 4 },
   detailText: { fontSize: 12, color: '#7F77DD', marginBottom: 2 },
   emptyBox: { backgroundColor: '#ffffff', borderRadius: 16, padding: 32, alignItems: 'center' },
-  emptyText: { fontSize: 16, fontWeight: '700', color: '#26215C' },
+  emptyText: { fontSize: 15, color: '#7F77DD' },
+  clubCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 20, borderWidth: 1.5, borderColor: '#DDD8FF' },
+  clubTitle: { fontSize: 16, fontWeight: '700', color: '#26215C', marginBottom: 14 },
+  clubItem: { fontSize: 14, color: '#534AB7', marginBottom: 10, lineHeight: 20 },
 });

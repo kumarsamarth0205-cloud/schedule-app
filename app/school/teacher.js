@@ -5,42 +5,44 @@ import {
 } from 'react-native';
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const noTimetable = { generated: false };
+const timetableGenerated = true;
 
 const myClasses = {
   Mon: [
-    { time: '9:00 AM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' },
-    { time: '11:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4B' },
+    { time: '8:00 AM', subject: 'Mathematics', room: 'Room 1', class: 'Class 10-A' },
+    { time: '10:00 AM', subject: 'Mathematics', room: 'Room 2', class: 'Class 9-B' },
   ],
-  Tue: [{ time: '10:00 AM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' }],
+  Tue: [
+    { time: '10:00 AM', subject: 'Mathematics', room: 'Room 2', class: 'Class 9-A' },
+  ],
   Wed: [
-    { time: '9:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4B' },
-    { time: '2:00 PM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6B' },
+    { time: '8:00 AM', subject: 'Mathematics', room: 'Room 1', class: 'Class 8-A' },
   ],
-  Thu: [{ time: '11:00 AM', subject: 'AI Fundamentals', room: 'B202', batch: 'BT-AI-4A' }],
-  Fri: [{ time: '1:00 PM', subject: 'Data Science', room: 'A101', batch: 'BT-DS-6A' }],
-  Sat: [],
+  Thu: [],
+  Fri: [
+    { time: '8:00 AM', subject: 'Mathematics', room: 'Room 1', class: 'Class 10-A' },
+  ],
+  Sat: [
+    { time: '8:00 AM', subject: 'Revision', room: 'Room 1', class: 'Class 10-A' },
+  ],
 };
 
-const myExamDuty = [
-  { date: '10 May', hall: 'Hall A', time: '10:00 AM - 1:00 PM', exam: 'Data Science' },
-  { date: '14 May', hall: 'Hall B', time: '2:00 PM - 5:00 PM', exam: 'AI Fundamentals' },
+const examDuty = [
+  { date: '10', month: 'May', hall: 'Hall A', time: '9:00 AM - 12:00 PM', exam: 'Mathematics — Class 10' },
+  { date: '15', month: 'May', hall: 'Hall B', time: '2:00 PM - 5:00 PM', exam: 'Science — Class 9' },
 ];
 
-const timetableGenerated = true;
-
-export default function FacultyScreen({ user, onLogout }) {
+export default function TeacherScreen({ user, onLogout }) {
   const [tab, setTab] = useState('timetable');
   const [selectedDay, setSelectedDay] = useState('Mon');
 
   const handleSickLeave = () => {
     Alert.alert(
       'Mark Sick Leave',
-      'AI will automatically reshuffle your classes and notify students.',
+      'AI will automatically reshuffle your classes and notify students and parents.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Confirm', style: 'destructive', onPress: () => Alert.alert('Done!', 'Sick leave marked! Students notified.') }
+        { text: 'Confirm', style: 'destructive', onPress: () => Alert.alert('Done!', 'Sick leave marked! Everyone notified.') }
       ]
     );
   };
@@ -49,15 +51,15 @@ export default function FacultyScreen({ user, onLogout }) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.topBar}>
-          <Text style={styles.header}>Faculty</Text>
+          <Text style={styles.header}>Teacher</Text>
           <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.waitBox}>
           <Text style={styles.waitIcon}>⏳</Text>
-          <Text style={styles.waitTitle}>Timetable Not Generated Yet</Text>
-          <Text style={styles.waitDesc}>Please wait for Admin to upload data and generate the timetable. You will be able to see your schedule here once it is ready.</Text>
+          <Text style={styles.waitTitle}>Timetable Not Ready Yet</Text>
+          <Text style={styles.waitDesc}>Admin is preparing the timetable. Please check back soon!</Text>
         </View>
       </SafeAreaView>
     );
@@ -67,7 +69,7 @@ export default function FacultyScreen({ user, onLogout }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
         <View>
-          <Text style={styles.header}>Faculty Dashboard</Text>
+          <Text style={styles.header}>Teacher Dashboard</Text>
           <Text style={styles.sub}>Welcome, {user?.name}</Text>
         </View>
         <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
@@ -111,7 +113,7 @@ export default function FacultyScreen({ user, onLogout }) {
                   <View style={styles.classInfo}>
                     <Text style={styles.subjectText}>{item.subject}</Text>
                     <Text style={styles.detailText}>🏫 {item.room}</Text>
-                    <Text style={styles.detailText}>👥 {item.batch}</Text>
+                    <Text style={styles.detailText}>👥 {item.class}</Text>
                   </View>
                 </View>
               ))
@@ -122,11 +124,11 @@ export default function FacultyScreen({ user, onLogout }) {
 
       {tab === 'exam' && (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {myExamDuty.map((item, i) => (
+          {examDuty.map((item, i) => (
             <View key={i} style={styles.examCard}>
               <View style={styles.dateBox}>
-                <Text style={styles.dateNum}>{item.date.split(' ')[0]}</Text>
-                <Text style={styles.dateMon}>{item.date.split(' ')[1]}</Text>
+                <Text style={styles.dateNum}>{item.date}</Text>
+                <Text style={styles.dateMon}>{item.month}</Text>
               </View>
               <View style={styles.classInfo}>
                 <Text style={styles.subjectText}>Invigilator — {item.hall}</Text>
@@ -146,8 +148,8 @@ const styles = StyleSheet.create({
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   header: { fontSize: 24, fontWeight: '800', color: '#26215C' },
   sub: { fontSize: 12, color: '#7F77DD', marginTop: 2 },
-  logoutBtn: { backgroundColor: '#ffffff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: '#534AB7' },
-  logoutText: { color: '#534AB7', fontWeight: '700' },
+  logoutBtn: { backgroundColor: '#ffffff', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: '#26215C' },
+  logoutText: { color: '#26215C', fontWeight: '700' },
   waitBox: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 },
   waitIcon: { fontSize: 60, marginBottom: 20 },
   waitTitle: { fontSize: 20, fontWeight: '800', color: '#26215C', marginBottom: 12, textAlign: 'center' },
@@ -156,18 +158,18 @@ const styles = StyleSheet.create({
   sickLeaveText: { color: '#E24B4A', fontWeight: '700', fontSize: 14 },
   tabRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },
   tab: { flex: 1, backgroundColor: '#ffffff', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1.5, borderColor: '#DDD8FF' },
-  tabActive: { backgroundColor: '#534AB7', borderColor: '#534AB7' },
-  tabText: { color: '#534AB7', fontWeight: '600', fontSize: 13 },
+  tabActive: { backgroundColor: '#26215C', borderColor: '#26215C' },
+  tabText: { color: '#26215C', fontWeight: '600', fontSize: 13 },
   tabTextActive: { color: '#ffffff' },
   dayScroll: { flexGrow: 0, marginBottom: 14 },
-  dayBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20, borderWidth: 1.5, borderColor: '#7F77DD', marginRight: 10 },
-  dayBtnActive: { backgroundColor: '#534AB7', borderColor: '#534AB7' },
-  dayText: { color: '#534AB7', fontWeight: '600' },
+  dayBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20, borderWidth: 1.5, borderColor: '#26215C', marginRight: 10 },
+  dayBtnActive: { backgroundColor: '#26215C', borderColor: '#26215C' },
+  dayText: { color: '#26215C', fontWeight: '600' },
   dayTextActive: { color: '#ffffff' },
-  classCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#534AB7' },
+  classCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#26215C' },
   examCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#E24B4A' },
   timeBox: { backgroundColor: '#f0eeff', borderRadius: 10, padding: 10, marginRight: 14, alignItems: 'center', minWidth: 75 },
-  timeText: { color: '#534AB7', fontWeight: '700', fontSize: 12 },
+  timeText: { color: '#26215C', fontWeight: '700', fontSize: 12 },
   dateBox: { backgroundColor: '#FCEBEB', borderRadius: 10, padding: 10, marginRight: 14, alignItems: 'center', minWidth: 55 },
   dateNum: { color: '#E24B4A', fontWeight: '800', fontSize: 20 },
   dateMon: { color: '#E24B4A', fontWeight: '600', fontSize: 11 },
